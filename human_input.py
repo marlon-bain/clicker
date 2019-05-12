@@ -16,17 +16,6 @@ class HumanInput:
 
         self.movement_speed_density = Normal('mouse_movement', 0.5, 0.10)
 
-    def get_mouse_move_progress(self, t):
-        assert t >= 0
-        assert t <= 1
-
-        return float(cdf(self.movement_speed_density)(t))
-
-    def get_mouse_move_time_ms(self, distance, target_size):
-        # Fitt's law
-        mean = math.log(2 * distance / float(target_size), 2) * config.MOUSE_SPEED_SCALE
-        return int(20 + sample(Normal('temp_mouse_move', abs(mean), abs(mean / 4.0))))
-
     def get_click_interval_ms(self):
         if time.time() - self.start_time > config.FOCUS_LENGTH_MEAN:
             self.is_focused = not self.is_focused
@@ -40,8 +29,4 @@ class HumanInput:
 def sample_normal(mu, std):
     return int(sample(Normal('temp_normal', mu, std)))
 
-if __name__ == '__main__':
-    human = HumanInput()
-    for i in range(20):
-        print(human.get_mouse_move_progress(0.05 * i))
 

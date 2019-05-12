@@ -33,14 +33,11 @@ class ClickBankOption:
         if self.pause_before_exit:
             self.exit = True
         elif self.click_pixel is not None:
-            print("[Click bank option] Clicking bank option")
             self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1])
             self.pause_before_exit = True
             self.click_pixel = None
             time.sleep(config.SETTLING_LATENCY_S)
-            print("[Click bank option] Clicked and yielding.")
         else:
-            print("Can't find bank option; exiting")
             exit(1)
 
     def transition(self):

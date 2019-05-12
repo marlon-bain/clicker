@@ -31,17 +31,14 @@ class Depositor:
 
     def on_message(self, message):
         if config.LOCATION_TAG in message:
-            print("[Depositor] Unsettled")
             self.settled = False
         elif config.SETTLED_TAG in message:
-            print("[Depositor] Settled")
             self.settled = True
 
     def transition(self):
         return self.exit
 
     def act(self):
-        print("[Depositor] Settled: {0}".format(self.settled))
         if self.current_stage_index == len(self.stages):
             self.exit = True
             return

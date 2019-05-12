@@ -13,19 +13,19 @@ from walker import walker
 mq = message_queue.MessageQueue()
 stages = [
     # Idle(),
-    walker.BankWalker(reverse=True),
-    cutter.CutLogs(),
-    walker.BankWalker(),
+    # walker.BankWalker(reverse=True),
+    # cutter.CutLogs(),
+    # walker.BankWalker(),
     depositor.Depositor(),
 ]
-current_stage_index = 1
+current_stage_index = 0
 
 debug = False
 debug_turns = 1000
 if __name__ == "__main__":
     mq.drain()
 
-    number_of_loops = random.randrange(10, 15)
+    number_of_loops = 0 * random.randrange(10, 15)
     print("Looping {0} times".format(number_of_loops + 1))
 
     while number_of_loops > 0:
@@ -57,11 +57,11 @@ if __name__ == "__main__":
             current_stage.act()
 
             if current_stage.transition():
-                current_stage_index = (current_stage_index + 1) % len(stages)
-                print("[Root] Transitioning to the next stage at index {0}".format(current_stage_index))
+                current_stage_index = current_stage_index + 1
                 if current_stage_index == len(stages):
                     print("All stages complete")
                     exit(0)
+                print("[Root] Transitioning to the next stage at index {0}".format(current_stage_index))
 
             # Press "q" to quit
             if cv.waitKey(config.TURN_LENGTH_MS) & 0xFF == ord("q"):

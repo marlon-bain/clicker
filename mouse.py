@@ -4,7 +4,10 @@ import config
 import random
 import time
 import human_input
+import vector
+import pickle
 import math
+import numpy as np
 
 random.seed(time.time())
 
@@ -14,10 +17,15 @@ y_points = [0, 2, 22, 39, 85, 92, 98, 100]
 x_points = map(lambda x: x / 7.0, x_points)
 y_points = map(lambda x: x / 100.0, y_points)
 
+
 class Mouse:
     def __init__(self):
         self.mouse = Controller()
         self.human_sampler = human_input.HumanInput()
+        self.paths = pickle.load(open(config.MOUSE_VECTORS_FILENAME, "rb"))
+        if len(self.paths) < 3:
+            print("Record some mouse paths first")
+            exit(0)
 
     def f(self, x):
         tck = interpolate.splrep(x_points, y_points)
@@ -25,25 +33,9 @@ class Mouse:
 
     def smooth_move(self, x, y):
         delay = self.human_sampler.get_click_interval_ms() / 1000.0
-        print("Sleeping for " + str(delay))
         time.sleep(abs(delay))
 
-        original = self.mouse.position
-        direction = (x - original[0], y - original[1])
-
-        distance = math.sqrt(direction[0] ** 2 + direction[1] ** 2)
-        movement_time = self.human_sampler.get_mouse_move_time_ms(int(distance), 50)
-        if movement_time % 2 == 1:
-            movement_time += 1
-
-        granularity = 1
-        for t in range(0, movement_time, granularity):
-            t = t / float(movement_time)
-            t = self.human_sampler.get_mouse_move_progress(t)
-            self.mouse.position = (original[0] + t * direction[0], original[1] + t * direction[1])
-            time.sleep(0.005)
-
-        self.mouse.position = (x, y)
+        self.move_using_path(self.paths[random.randrange(len(self.paths))], (x, y))
         self.mouse.move(4, 4)
         self.mouse.move(-4, -4)
 
@@ -83,7 +75,7 @@ class Mouse:
 
         if move_after:
             self.move_randomly(scroll)
-            self.smooth_move(original_position[0], original_position[1])
+            self.smooth_move(original_position[1], original_position[0])
 
 
     def move_randomly(self, scroll):
@@ -96,7 +88,7 @@ class Mouse:
             if should_scroll:
                 self.mouse.press(Button.middle)
 
-            self.smooth_move(random.randrange(width), random.randrange(height))
+            self.smooth_move(random.randrange(height), random.randrange(width))
 
             if should_scroll:
                 self.mouse.release(Button.middle)
@@ -119,3 +111,31 @@ class Mouse:
 
     def position(self):
         print(self.mouse.position)
+
+
+    def move_using_path(self, path, end, recurse=True):
+        start = self.mouse.position
+        # Contingent on recorded paths having an l2 length of sqrt(2) since they go from (0, 0) to (1, 1)
+
+        target = (end[0] - start[0], end[1] - start[1])
+        rotate_counter = target[1] < target[0]
+        scale_factor = vector.l2_length(target) / math.sqrt(2)
+        scale = np.eye(2) * scale_factor
+
+        theta = vector.angle_between(target, (10.0, 10.0))
+
+        # This took forever to figure out
+        if rotate_counter:
+            theta = -theta
+
+        c, s = np.cos(theta), np.sin(theta)
+        rotate = np.array(((c,-s), (s, c)))
+        for point in path:
+            point_vector = [[point[0]], [point[1]]]
+            transformed_point = scale.dot(rotate).dot(point_vector)
+            x = int(transformed_point[0][0] + start[0])
+            y = int(transformed_point[1][0] + start[1])
+            self.mouse.position = (x, y)
+            time.sleep(0.02)
+
+        self.mouse.position = end
