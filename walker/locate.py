@@ -13,7 +13,8 @@ path_to_bank = [
 path_to_trees = [
     (3185, 3489),
     (3196, 3490),
-    (3201, 3503)
+    (3201, 3503),
+    (3207, 3503)
 ]
 
 class Locate:
@@ -83,21 +84,6 @@ class Locate:
         # Scale the vector up since 2 pixels in minimap-space represents 1 tile in RSWorld-space
         minimap_delta = vector.truncate_magnitude((world_delta[0] * 4, world_delta[1] * 4), int(min(minimap_width, minimap_height) / 2.5))
         minimap_next_click_screenspace = (minimap_center_screenspace[0] + minimap_delta[0], minimap_center_screenspace[1] - minimap_delta[1])
-
-        # print("Center is at ")
-        # print(minimap_center_screenspace)
-        #
-        # print("World location is at")
-        # print(self.location)
-        #
-        # print("World delta is ")
-        # print(world_delta)
-        #
-        # print("Minimap delta is")
-        # print(minimap_delta)
-        #
-        # print("Target is at")
-        # print(minimap_next_click_screenspace)
         return vector.swap(minimap_next_click_screenspace)
 
     def set_is_close_enough(self):
@@ -107,7 +93,6 @@ class Locate:
         next_coordinate = self.path[self.next_path_index]
         world_delta = (self.parent.location[0] - next_coordinate[0], self.parent.location[1] - next_coordinate[1])
         distance = vector.l2_length(world_delta)
-
         close_enough_radius = 8
         self.close_enough = distance <= close_enough_radius
 

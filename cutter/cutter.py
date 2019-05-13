@@ -23,7 +23,6 @@ class CutLogs:
     def on_message(self, body):
         if "is now idle" in body or "log out from idling" in body:
             self.set_stage(cut.Cut(self))
-            print("Setting stage to cut")
         elif "inventory" in body:
             self.exit = True
         else:
@@ -47,7 +46,6 @@ class CutLogs:
         if stage_time_left <= 0:
             print("Timing out stage")
             self.set_stage(cut.Cut(self))
-            print("Setting stage to cut")
             return
 
         if self.current_stage is None:
@@ -59,11 +57,8 @@ class CutLogs:
         if should_transition:
             if should_pan:
                 self.set_stage(pan.Pan(self))
-                print("Setting stage to pan")
             elif should_cut:
                 self.set_stage(cut.Cut(self))
-                print("Setting stage to cut")
             else:
                 self.set_stage(None)
-                print("Setting stage to none")
 
