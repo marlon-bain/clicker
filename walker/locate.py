@@ -14,7 +14,8 @@ path_to_trees = [
     (3185, 3489),
     (3196, 3490),
     (3201, 3503),
-    (3207, 3503)
+    (3207, 3503),
+    (3212, 3503)
 ]
 
 class Locate:
@@ -39,8 +40,8 @@ class Locate:
         closest_distance = 100
         for i in range(len(self.path)):
             path_coordinate = self.path[i]
-            distance_x = abs(self.parent.location[0] - path_coordinate[0])
-            distance_y = abs(self.parent.location[1] - path_coordinate[1])
+            distance_x = abs(self.parent.parent.location[0] - path_coordinate[0])
+            distance_y = abs(self.parent.parent.location[1] - path_coordinate[1])
             if distance_x + distance_y < closest_distance:
                 closest_distance = distance_x + distance_y
                 closest_index = i
@@ -79,7 +80,7 @@ class Locate:
 
         print("Navigating to point {0}".format(self.next_path_index))
         next_point = self.path[self.next_path_index]
-        world_delta = (next_point[0] - self.parent.location[0], next_point[1] - self.parent.location[1])
+        world_delta = (next_point[0] - self.parent.parent.location[0], next_point[1] - self.parent.parent.location[1])
 
         # Scale the vector up since 2 pixels in minimap-space represents 1 tile in RSWorld-space
         minimap_delta = vector.truncate_magnitude((world_delta[0] * 4, world_delta[1] * 4), int(min(minimap_width, minimap_height) / 2.5))
@@ -91,7 +92,7 @@ class Locate:
             return
 
         next_coordinate = self.path[self.next_path_index]
-        world_delta = (self.parent.location[0] - next_coordinate[0], self.parent.location[1] - next_coordinate[1])
+        world_delta = (self.parent.parent.location[0] - next_coordinate[0], self.parent.parent.location[1] - next_coordinate[1])
         distance = vector.l2_length(world_delta)
         close_enough_radius = 8
         self.close_enough = distance <= close_enough_radius

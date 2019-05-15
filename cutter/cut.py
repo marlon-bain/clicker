@@ -29,7 +29,7 @@ class Cut:
 
     def act(self):
         if self.click_pixel is not None:
-            self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1], scroll=False)
+            self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1], scroll=False, fast=True)
             self.click_pixel = None
             self.pan = False
         else:

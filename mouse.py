@@ -31,15 +31,15 @@ class Mouse:
         tck = interpolate.splrep(x_points, y_points)
         return interpolate.splev(x, tck)
 
-    def smooth_move(self, x, y):
-        delay = self.human_sampler.get_click_interval_ms() / 1000.0
-        time.sleep(abs(delay))
+    def smooth_move(self, x, y, fast=False):
+        # delay = self.human_sampler.get_click_interval_ms() / 1000.0
+        # time.sleep(abs(delay))
 
-        self.move_using_path(self.paths[random.randrange(len(self.paths))], (x, y))
+        self.move_using_path(self.paths[random.randrange(len(self.paths))], (x, y), fast)
         self.mouse.move(4, 4)
         self.mouse.move(-4, -4)
 
-    def click_in_frame(self, x, y, scroll=True, right=False, move_after=True):
+    def click_in_frame(self, x, y, scroll=True, right=False, move_after=True, fast=False):
         if y > config.MONITOR['width']:
             print(y, x)
             print("Attempted to click outside of the frame on the x-axis")
@@ -53,11 +53,12 @@ class Mouse:
         original_position = self.mouse.position
 
         # mouse.position = (y, x + top_offset)
-        self.smooth_move(y + config.MONITOR['left'], x + config.MONITOR['top'])
+        self.smooth_move(y + config.MONITOR['left'], x + config.MONITOR['top'], fast)
 
         # Press and release
-        delay = int(human_input.sample_normal(50, 15))/ 1000.0
-        time.sleep(abs(delay))
+        if not fast:
+            delay = int(human_input.sample_normal(50, 15))/ 1000.0
+            time.sleep(abs(delay))
 
         button = Button.left if not right else Button.right
         if config.DEBUG_CLICK:
@@ -82,16 +83,14 @@ class Mouse:
         width = config.MONITOR['width']
         height = config.MONITOR['height']
 
-        for n in range(random.randrange(3)):
-            should_scroll = scroll and (random.randint(0, 2) == 0)
+        should_scroll = scroll and (random.randint(0, 2) == 0)
+        if should_scroll:
+            self.mouse.press(Button.middle)
 
-            if should_scroll:
-                self.mouse.press(Button.middle)
+        self.smooth_move(random.randrange(height), random.randrange(width))
 
-            self.smooth_move(random.randrange(height), random.randrange(width))
-
-            if should_scroll:
-                self.mouse.release(Button.middle)
+        if should_scroll:
+            self.mouse.release(Button.middle)
 
 
     def pan(self):
@@ -113,7 +112,7 @@ class Mouse:
         print(self.mouse.position)
 
 
-    def move_using_path(self, path, end, recurse=True):
+    def move_using_path(self, path, end, fast=False):
         start = self.mouse.position
         # Contingent on recorded paths having an l2 length of sqrt(2) since they go from (0, 0) to (1, 1)
 
@@ -123,19 +122,19 @@ class Mouse:
         scale = np.eye(2) * scale_factor
 
         theta = vector.angle_between(target, (10.0, 10.0))
-
-        # This took forever to figure out
         if rotate_counter:
             theta = -theta
 
         c, s = np.cos(theta), np.sin(theta)
         rotate = np.array(((c,-s), (s, c)))
+
+        pause = 0.01 if fast else 0.02
         for point in path:
             point_vector = [[point[0]], [point[1]]]
             transformed_point = scale.dot(rotate).dot(point_vector)
             x = int(transformed_point[0][0] + start[0])
             y = int(transformed_point[1][0] + start[1])
             self.mouse.position = (x, y)
-            time.sleep(0.02)
+            time.sleep(pause)
 
         self.mouse.position = end

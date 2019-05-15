@@ -38,6 +38,7 @@ class ClickBankOption:
             self.click_pixel = None
             time.sleep(config.SETTLING_LATENCY_S)
         else:
+            print("Can't find click pixel in click_bank_option")
             exit(1)
 
     def transition(self):

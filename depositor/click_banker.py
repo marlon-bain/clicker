@@ -30,7 +30,7 @@ class ClickBanker:
 
     def act(self):
         if self.click_pixel is not None:
-            self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1], scroll=False, move_after=False, right=True)
+            self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1], scroll=False, move_after=False, right=True, fast=True)
             self.exit = True
         else:
             self.parent.mouse.pan()

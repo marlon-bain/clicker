@@ -1,6 +1,3 @@
-import time
-import config
-
 class Pan:
     def __init__(self, parent):
         self.parent = parent
@@ -12,7 +9,6 @@ class Pan:
         pass
 
     def act(self):
-        print("Panning")
         self.parent.mouse.pan()
 
     def transition(self):

@@ -47,7 +47,10 @@ class MoveRandomly:
         pass
 
     def act(self):
-        if self.click_pixel is not None:
+        if self.parent.parent.location is not None:
+            self.exit = True
+            print("Not moving randomly because root already has location")
+        elif self.click_pixel is not None:
             self.parent.mouse.click_in_frame(self.click_pixel[0], self.click_pixel[1], scroll=False)
             self.click_pixel = None
             self.exit = True

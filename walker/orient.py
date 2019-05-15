@@ -23,7 +23,7 @@ class Orient:
 
     def on_image(self, img):
         print("Attempting to get compass data")
-        if self.parent.location is None:
+        if self.parent.parent.location is None:
             print("Waiting for location data")
             return
 
