@@ -34,6 +34,7 @@ class ClickDeposit:
             self.exit = True
         else:
             print("Can't find deposit option; exiting")
+            exit(1)
 
     def transition(self):
         return self.exit

@@ -17,7 +17,7 @@ class BankWalker:
     def __init__(self, parent, reverse=False):
         self.parent = parent
         self.current_stage_index = 0
-        self.stages = [move_randomly.MoveRandomly(self), orient.Orient(self), locate.Locate(self, reverse=reverse)]
+        self.stages = [] if config.MAGIC_LOGS else [move_randomly.MoveRandomly(self), orient.Orient(self), locate.Locate(self, reverse=reverse)]
         self.exit = False
 
         self.mouse = mouse.Mouse()

@@ -1,12 +1,14 @@
 # Part of the screen to capture
 MONITOR = {"top": 40, "left": 0, "width": 800, "height": 640}
 
+MAGIC_LOGS = True
+
 # Pixels from where you right click to where you click "bank"
 DISTANCE_TO_BANK_OPTION = 40
 
 TURN_LENGTH_MS = 10
 SETTLING_LATENCY_S = 2
-MAX_NONE_TIME_S = 60
+MAX_NONE_TIME_S = 180 if MAGIC_LOGS else 60
 
 MOUSE_SPEED_SCALE = 4.0
 
@@ -32,5 +34,5 @@ SETTLED_TAG = "[SETTLED]"
 
 MOUSE_VECTORS_FILENAME = "mouse_vectors.shart"
 
-BOTTOM_LEFT = (3157, 3480)
-TOP_RIGHT = (3225, 3505)
+BOTTOM_LEFT = (1575, 3470) if MAGIC_LOGS else (3157, 3480)
+TOP_RIGHT = (1596, 3497) if MAGIC_LOGS else (3225, 3505)
