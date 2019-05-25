@@ -1,4 +1,5 @@
 from walker import walker
+import config
 
 class LocationChecker:
     def __init__(self, parent, bottom_left, top_right):
@@ -19,6 +20,8 @@ class LocationChecker:
         if a or b or c or d:
             print("Location invariant violation by {0}; walking to bank first".format(location))
             print("{0}, {1}, {2}, {3}".format(a, b, c, d))
+            if config.MAGIC_LOGS:
+                exit(1)
             return walker.BankWalker(self.parent)
 
         return None
